@@ -1,15 +1,14 @@
 package org.koin.core.mp
 
-import kotlinx.cinterop.get
-import kotlinx.cinterop.toKString
-import platform.posix.__environ
+import co.touchlab.stately.collections.frozenHashMap
+import co.touchlab.stately.collections.frozenHashSet
+import co.touchlab.stately.collections.frozenLinkedList
+import kotlin.native.concurrent.freeze
 import kotlin.reflect.KClass
 import kotlin.system.getTimeNanos
 
 actual object KoinMultiPlatform {
-    actual fun <K, V> emptyMutableMap(): MutableMap<K, V> {
-        return HashMap()
-    }
+    actual fun <K, V> emptyMutableMap(): MutableMap<K, V> = frozenHashMap()
 
     actual fun stackTrace(throwable: Throwable): List<String> {
         return throwable.getStackTrace().toList()
@@ -21,20 +20,6 @@ actual object KoinMultiPlatform {
 
     actual fun getSystemProperties(): Map<String, String> {
         return emptyMap()
-    }
-
-    actual fun getSystemEnvironmentProperties(): Map<String, String> {
-        val source = __environ ?: return emptyMap()
-        val target = mutableMapOf<String, String>()
-        for (i in 0..Int.MAX_VALUE) {
-            val value = source.get(i) ?: break
-            val str = value.toKString()
-            val index = str.indexOf("=")
-            if (index != -1) {
-                target += str.substring(0, index) to str.substring(index + 1)
-            }
-        }
-        return target
     }
 
     actual fun loadResourceString(fileName: String): String? {
@@ -56,4 +41,10 @@ actual object KoinMultiPlatform {
     actual fun printStackTrace(throwable: Throwable) {
         stackTrace(throwable).forEach(::println)
     }
+
+    actual fun <T> emptyMutableSet(): MutableSet<T> = frozenHashSet()
+
+    actual fun <T> emptyMutableList(): MutableList<T> = frozenLinkedList()
 }
+
+actual fun <T> T.freeze(): T = this.freeze()

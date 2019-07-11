@@ -1,36 +1,49 @@
 package org.koin.dsl
 
 import org.koin.core.qualifier.named
+import org.koin.multiplatform.dispatchThread
+import kotlin.js.JsName
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ModuleSpecialRulesTest {
 
     @Test
-    fun `generic type declaration`() {
-        val koin = koinApplication {
-            modules(module {
-                single { arrayListOf<String>() }
-            })
-        }.koin
-
-        koin.get<ArrayList<String>>()
+    @JsName("generic_type_declaration")
+fun `generic type declaration`() {
+        val koin = dispatchThread {
+            koinApplication {
+                modules(module {
+                    single { arrayListOf<String>() }
+                })
+            }.koin
+        }
+        dispatchThread {
+            koin.get<ArrayList<String>>()
+        }
     }
 
     @Test
-    fun `generic types declaration`() {
-        val koin = koinApplication {
-            modules(module {
-                single(named("strings")) { arrayListOf<String>() }
-                single(named("ints")) { arrayListOf<Int>() }
-            })
-        }.koin
+    @JsName("generic_types_declaration")
+fun `generic types declaration`() {
+        val koin = dispatchThread {
+            koinApplication {
+                modules(module {
+                    single(named("strings")) { testyList<String>() }
+                    single(named("ints")) { testyList<Int>() }
+                })
+            }.koin
+        }
 
-        val strings = koin.get<ArrayList<String>>(named("strings"))
-        strings.add("test")
+        dispatchThread {
+            val strings = koin.get<MutableList<String>>(named("strings"))
+            strings.add("test")
 
-        assertEquals(1, koin.get<ArrayList<String>>(named("strings")).size)
+            assertEquals(1, koin.get<MutableList<String>>(named("strings")).size)
 
-        assertEquals(0, koin.get<ArrayList<String>>(named("ints")).size)
+            assertEquals(0, koin.get<MutableList<String>>(named("ints")).size)
+        }
     }
 }
+
+expect fun <T> testyList(): MutableList<T>

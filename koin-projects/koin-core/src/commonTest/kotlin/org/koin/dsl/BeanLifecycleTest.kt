@@ -1,15 +1,18 @@
 package org.koin.dsl
 
 import org.koin.Simple
+import org.koin.core.mp.FrozenDelegate
 import org.koin.core.qualifier.named
+import kotlin.js.JsName
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class BeanLifecycleTest {
 
     @Test
-    fun `declare onClose for single`() {
-        var result = ""
+    @JsName("declare_onClose_for_single")
+fun `declare onClose for single`() {
+        var result : String by FrozenDelegate("")
         val app = koinApplication {
             printLogger()
             modules(
@@ -24,8 +27,9 @@ class BeanLifecycleTest {
     }
 
     @Test
-    fun `declare onClose for factory`() {
-        var result = ""
+    @JsName("declare_onClose_for_factory")
+fun `declare onClose for factory`() {
+        var result : String by FrozenDelegate("")
         val app = koinApplication {
             printLogger()
             modules(
@@ -40,8 +44,9 @@ class BeanLifecycleTest {
     }
 
     @Test
-    fun `declare onClose for scoped`() {
-        var result = ""
+    @JsName("declare_onClose_for_scoped")
+fun `declare onClose for scoped`() {
+        var result : String by FrozenDelegate("")
         val app = koinApplication {
             printLogger()
             modules(
@@ -59,8 +64,9 @@ class BeanLifecycleTest {
     }
 
     @Test
-    fun `declare onRelease for single`() {
-        var result = ""
+    @JsName("declare_onRelease_for_single")
+fun `declare onRelease for single`() {
+        var result : String by FrozenDelegate("")
         val app = koinApplication {
             printLogger()
             modules(
@@ -75,8 +81,9 @@ class BeanLifecycleTest {
     }
 
     @Test
-    fun `declare onRelease for factory`() {
-        var result = ""
+    @JsName("declare_onRelease_for_factory")
+fun `declare onRelease for factory`() {
+        var result : String by FrozenDelegate("")
         val app = koinApplication {
             printLogger()
             modules(
@@ -91,8 +98,9 @@ class BeanLifecycleTest {
     }
 
     @Test
-    fun `declare onRelease for scoped`() {
-        var result = ""
+    @JsName("declare_onRelease_for_scoped")
+fun `declare onRelease for scoped`() {
+        var result : String by FrozenDelegate("")
         val app = koinApplication {
             printLogger()
             modules(

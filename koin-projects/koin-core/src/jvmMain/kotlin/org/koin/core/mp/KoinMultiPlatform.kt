@@ -23,11 +23,6 @@ actual object KoinMultiPlatform {
         return System.getProperties().toMap()
     }
 
-    actual fun getSystemEnvironmentProperties(): Map<String, String> {
-        @Suppress("UNCHECKED_CAST")
-        return System.getenv().toProperties().toMap()
-    }
-
     actual fun loadResourceString(fileName: String): String? {
         return Koin::class.java.getResource(fileName)?.readText()
     }
@@ -45,4 +40,15 @@ actual object KoinMultiPlatform {
     actual fun printStackTrace(throwable: Throwable) {
         throwable.printStackTrace()
     }
+
+    actual fun <T> emptyMutableSet(): MutableSet<T> = HashSet()
+
+    actual fun <T> emptyMutableList(): MutableList<T> = arrayListOf()
 }
+
+internal actual fun getSystemEnvironmentProperties(): Map<String, String> {
+    @Suppress("UNCHECKED_CAST")
+    return System.getenv().toProperties().toMap()
+}
+
+actual fun <T> T.freeze(): T = this

@@ -18,13 +18,12 @@ package org.koin.core.context
 import org.koin.core.KoinApplication
 import org.koin.core.error.KoinAppAlreadyStartedException
 import org.koin.core.module.Module
+import org.koin.core.mp.FrozenDelegate
 import org.koin.core.mp.KoinMPLock
+import org.koin.core.mp.freeze
 import org.koin.dsl.KoinAppDeclaration
 import kotlin.jvm.JvmStatic
-import kotlin.native.concurrent.SharedImmutable
 
-@SharedImmutable
-private var app: KoinApplication? = null
 
 /**
  * Global context - current Koin Application available globally
@@ -35,6 +34,7 @@ private var app: KoinApplication? = null
 object GlobalContext {
 
     private val synchronized = KoinMPLock(this)
+    private var app : KoinApplication? by FrozenDelegate(null)
 
     /**
      * StandAlone Koin App instance
@@ -60,7 +60,7 @@ object GlobalContext {
         if (app != null) {
             throw KoinAppAlreadyStartedException("A Koin Application has already been started")
         }
-        app = koinApplication
+        app = koinApplication.freeze()
     }
 
     /**
@@ -81,7 +81,7 @@ fun startKoin(appDeclaration: KoinAppDeclaration): KoinApplication {
     GlobalContext.start(koinApplication)
     appDeclaration(koinApplication)
     koinApplication.createEagerInstances()
-    return koinApplication
+    return koinApplication.freeze()
 }
 
 /**

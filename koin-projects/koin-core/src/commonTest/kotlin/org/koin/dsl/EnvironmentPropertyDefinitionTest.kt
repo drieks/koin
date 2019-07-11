@@ -2,23 +2,34 @@ package org.koin.dsl
 
 import org.koin.core.logger.Level
 import org.koin.core.mp.KoinMultiPlatform
+import org.koin.core.mp.getSystemEnvironmentProperties
+import org.koin.multiplatform.dispatchThread
+import kotlin.js.JsName
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class EnvironmentPropertyDefinitionTest {
 
     @Test
-    fun `load and get properties from environment`() {
-        val sysProperties = KoinMultiPlatform.getSystemEnvironmentProperties()
-        val aPropertyKey: String = sysProperties.keys.first()
+    @JsName("load_and_get_properties_from_environment")
+fun `load and get properties from environment`() {
+        val sysProperties = getSystemEnvironmentProperties()
+        val keys = sysProperties.keys
+        if(keys.isEmpty())
+            return
+        val aPropertyKey: String = keys.first()
         val aPropertyValue = sysProperties[aPropertyKey]
 
-        val koin = koinApplication {
-            printLogger(Level.DEBUG)
-            environmentProperties()
-        }.koin
+        val koin = dispatchThread {
+            koinApplication {
+                printLogger(Level.DEBUG)
+                environmentProperties()
+            }.koin
+        }
 
-        val foundValue = koin.getProperty<String>(aPropertyKey)
-        assertEquals(aPropertyValue, foundValue)
+        dispatchThread {
+            val foundValue = koin.getProperty<String>(aPropertyKey)
+            assertEquals(aPropertyValue, foundValue)
+        }
     }
 }
